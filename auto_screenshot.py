@@ -4,13 +4,13 @@
 
 from PIL import ImageGrab
 from time import sleep
+from datetime import datetime
 from email.mime.text import MIMEText
 
 ####################
 
 def sendemail(From,SMTP,Pswd,To,msg):
     import smtplib
-    print("确认邮箱为" + From + "(" + Pswd + SMTP + ")" + "--->" + To)
     server = smtplib.SMTP_SSL(SMTP,465)
     server.set_debuglevel(1)
     server.login(From,Pswd)
@@ -24,9 +24,15 @@ def sendemail(From,SMTP,Pswd,To,msg):
 ####################
 
 def checktime():
-    import datetime
-    checkedtime = datetime.datetime.now().strftime("%Y_%m_%d %H_%M_%S")
+    checkedtime = int(datetime.now().strftime("%M%S"))
     return checkedtime
+
+####################
+
+def tIme():
+    import datetime
+    nowtime = datetime.datetime.now().strftime("%Y_%m_%d %H_%M_%S")
+    return nowtime
 
 ####################
 
@@ -35,9 +41,13 @@ def auto_screenshot():
     SMTP = input("请输入SMTP服务器地址(如smtp.qq.com) ：\n")
     Pswd = input("请输入发件人密码：\n")
     To = input("请输入接收邮箱：\n")
+    print("确认邮箱为" + From + "(" + Pswd + "-" + SMTP + ")" + "--->" + To)
     while True:
         checkedtime = checktime()
-        im_name = "scrshot_%s"%(checkedtime)
+        while checkedtime != 0000 and checkedtime != 1500 and checkedtime != 3000 and checkedtime != 4500:
+            checkedtime = checktime()
+        nowtime = tIme()
+        im_name = "screenshot_%s"%(nowtime)
         im = ImageGrab.grab()
         try:
             im.save("%s.jpg"%(im_name))
@@ -45,7 +55,7 @@ def auto_screenshot():
             sendemail(From,SMTP,Pswd,To,msg)
         except:
             msg = MIMEText("截图服务意外终止！将在15分钟后重试。",'plain','utf-8')
-        sleep(900)
+        sleep(1)
 
 ####################
 
